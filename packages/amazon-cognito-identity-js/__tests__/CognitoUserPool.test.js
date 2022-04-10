@@ -10,11 +10,18 @@ describe('Constructor and accessor methods', () => {
 		jest.restoreAllMocks();
 	});
 
-	test('when either userPoolId or clientId is null throw a requirement error', () => {
-		const data = { UserPoolId: null, ClientId: clientId };
+	test('when both userPoolId and endpoint is null throw a requirement error', () => {
+		const data = { UserPoolId: null, endpoint: null };
 		expect(() => {
 			new CognitoUserPool(data);
-		}).toThrowError('Both UserPoolId and ClientId are required.');
+		}).toThrowError('Either UserPoolId or endpoint is required.');
+	});
+
+	test('when ClientId is null throw a requirement error', () => {
+		const data = { UserPoolId: userPoolId, ClientId: null };
+		expect(() => {
+			new CognitoUserPool(data);
+		}).toThrowError('ClientId is required.');
 	});
 
 	test('Getting clientId from CognitoUserPool', () => {

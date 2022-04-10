@@ -15,11 +15,14 @@ class CognitoError extends Error {
 export default class Client {
 	/**
 	 * Constructs a new AWS Cognito Identity Provider client object
-	 * @param {string} region AWS region
+	 * @param {string} region AWS region. Optional if endpoint is provided.
 	 * @param {string} endpoint endpoint
 	 * @param {object} fetchOptions options for fetch API (only credentials is supported)
 	 */
 	constructor(region, endpoint, fetchOptions) {
+		if (!region && !endpoint) {
+			throw new Error('Either region or endpoint is required.');
+		}
 		this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
 		const { credentials } = fetchOptions || {};
 		this.fetchOptions = credentials ? { credentials } : {};

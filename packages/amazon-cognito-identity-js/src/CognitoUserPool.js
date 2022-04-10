@@ -15,8 +15,10 @@ export default class CognitoUserPool {
 	 * Constructs a new CognitoUserPool object
 	 * @param {object} data Creation options.
 	 * @param {string} data.UserPoolId Cognito user pool id.
+	 *        Optional if endpoint is provided.
 	 * @param {string} data.ClientId User pool application client id.
 	 * @param {string} data.endpoint Optional custom service endpoint.
+	 *        Required if UserPoolId is omitted.
 	 * @param {object} data.fetchOptions Optional options for fetch API.
 	 *        (only credentials option is supported)
 	 * @param {object} data.Storage Optional storage object.
@@ -33,13 +35,16 @@ export default class CognitoUserPool {
 			fetchOptions,
 			AdvancedSecurityDataCollectionFlag,
 		} = data || {};
-		if (!UserPoolId || !ClientId) {
-			throw new Error('Both UserPoolId and ClientId are required.');
+		if (!UserPoolId && !endpoint) {
+			throw new Error('Either UserPoolId or endpoint is required.');
 		}
-		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
+		if (!ClientId) {
+			throw new Error('ClientId is required.');
+		}
+		if (UserPoolId && (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId))) {
 			throw new Error('Invalid UserPoolId format.');
 		}
-		const region = UserPoolId.split('_')[0];
+		const region = UserPoolId ? UserPoolId.split('_')[0] : undefined;
 
 		this.userPoolId = UserPoolId;
 		this.clientId = ClientId;
