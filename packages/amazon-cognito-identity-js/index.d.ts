@@ -308,6 +308,7 @@ declare module 'amazon-cognito-identity-js' {
 		);
 
 		public getUserPoolId(): string;
+		public getUserPoolName(): string;
 		public getClientId(): string;
 
 		public signUp(
