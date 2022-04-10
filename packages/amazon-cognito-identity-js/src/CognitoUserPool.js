@@ -41,12 +41,17 @@ export default class CognitoUserPool {
 		if (!ClientId) {
 			throw new Error('ClientId is required.');
 		}
-		if (UserPoolId && (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId))) {
+		if (
+			UserPoolId &&
+			(UserPoolId.length > USER_POOL_ID_MAX_LENGTH ||
+				!/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId))
+		) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId ? UserPoolId.split('_')[0] : undefined;
 
 		this.userPoolId = UserPoolId;
+		this.endpoint = endpoint;
 		this.clientId = ClientId;
 
 		this.client = new Client(region, endpoint, fetchOptions);
@@ -70,6 +75,16 @@ export default class CognitoUserPool {
 	 */
 	getUserPoolId() {
 		return this.userPoolId;
+	}
+
+	/**
+	 * @returns {string} the user pool name
+	 */
+	getUserPoolName() {
+		if (this.userPoolId) {
+			return this.userPoolId.split('_')[1];
+		}
+		return this.endpoint;
 	}
 
 	/**
@@ -171,15 +186,17 @@ export default class CognitoUserPool {
 			return undefined;
 		}
 		/* eslint-disable */
-		const amazonCognitoAdvancedSecurityDataConst = AmazonCognitoAdvancedSecurityData;
+		const amazonCognitoAdvancedSecurityDataConst =
+			AmazonCognitoAdvancedSecurityData;
 		/* eslint-enable */
 
 		if (this.advancedSecurityDataCollectionFlag) {
-			const advancedSecurityData = amazonCognitoAdvancedSecurityDataConst.getData(
-				username,
-				this.userPoolId,
-				this.clientId
-			);
+			const advancedSecurityData =
+				amazonCognitoAdvancedSecurityDataConst.getData(
+					username,
+					this.userPoolId,
+					this.clientId
+				);
 			if (advancedSecurityData) {
 				const userContextData = {
 					EncodedData: advancedSecurityData,
